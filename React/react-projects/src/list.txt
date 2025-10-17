@@ -1,0 +1,49 @@
+🧩 1. Counter App - Done!
+
+Concepts: Components, State, Event Handling
+→ Create a button that increases or decreases a number.
+Bonus: Add a “Reset” button.
+
+📝 2. Todo List - On GOING
+
+Concepts: State, Props, Lists & Keys, Conditional Rendering
+→ Add, display, and delete todo items.
+Bonus: Mark tasks as complete (toggle state).
+
+💬 3. Feedback Form
+
+Concepts: Controlled Components, State, Event Handling
+→ Create a simple form (name, comment) and show the submitted feedback below.
+Bonus: Add validation (empty input warning).
+
+📦 4. Product Card / Profile Card
+
+Concepts: Props, Component Composition
+→ Build reusable cards that display user or product info.
+Bonus: Combine multiple small components (e.g., Avatar, Info, Button).
+
+🌡️ 5. Temperature Converter
+
+Concepts: State, Lifting State Up, Controlled Inputs
+→ Input °C converts to °F and vice versa.
+Bonus: Show messages like “Boiling” when above 100°C.
+
+📃 6. FAQ Accordion
+
+Concepts: Conditional Rendering, State
+→ Click a question to toggle showing the answer.
+Bonus: Allow only one open at a time.
+
+🗂️ 7. Simple User List
+
+Concepts: Props, Lists & Keys, Component Composition
+→ Map through an array of users and display them in cards.
+Bonus: Add a search filter.
+
+🕹️ 8. Light/Dark Mode Toggle
+
+Concepts: State, Event Handling, Conditional Rendering
+→ Toggle between light and dark UI themes.
+Bonus: Save the mode to localStorage.
+
+Would you like me to arrange these into a beginner-to-advanced progression roadmap (what to build first,
