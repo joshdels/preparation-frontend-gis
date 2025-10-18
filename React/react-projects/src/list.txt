@@ -34,13 +34,13 @@ Concepts: Conditional Rendering, State
 → Click a question to toggle showing the answer.
 Bonus: Allow only one open at a time.
 
-🗂️ 7. Simple User List - On Going
+🗂️ 7. Simple User List - Done
 
 Concepts: Props, Lists & Keys, Component Composition
 → Map through an array of users and display them in cards.
 Bonus: Add a search filter.
 
-🕹️ 8. Light/Dark Mode Toggle
+🕹️ 8. Light/Dark Mode Toggle - Done
 
 Concepts: State, Event Handling, Conditional Rendering
 → Toggle between light and dark UI themes.
@@ -49,7 +49,7 @@ Bonus: Save the mode to localStorage.
 ⚙️ INTERMEDIATE REACT MINI PROJECTS
 
 
-🧮 9. Shared Counter Dashboard
+🧮 9. Shared Counter Dashboard -on Going
 
 Concepts: Lifting State Up, Props, Event Handling
 🧩 Goal:
