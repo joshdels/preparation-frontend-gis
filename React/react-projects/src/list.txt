@@ -49,7 +49,7 @@ Bonus: Save the mode to localStorage.
 ⚙️ INTERMEDIATE REACT MINI PROJECTS
 
 
-🧮 9. Shared Counter Dashboard -on Going
+🧮 9. Shared Counter Dashboard -Done having hard time :(
 
 Concepts: Lifting State Up, Props, Event Handling
 🧩 Goal:
@@ -59,7 +59,7 @@ Changing any counter updates the total.
 Add a reset button in the parent that resets all counters.
 Pass handlers down as props.
 
-📦 10. Shopping Cart
+📦 10. Shopping Cart - Done super struggle sa concepts
 
 Concepts: Lifting State Up, Derived State, Lists & Keys
 🧩 Goal:
@@ -69,7 +69,7 @@ Show a cart summary with total items and price.
 Add quantity updates and item removal.
 Move product and cart logic into separate components.
 
-🌤️ 11. Weather Fetcher
+🌤️ 11. Weather Fetcher -Finish
 
 Concepts: useEffect, Fetch API, Conditional Rendering
 🧩 Goal:
@@ -78,7 +78,7 @@ Input a city name and fetch current weather (use OpenWeatherMap API
 Show “Loading…” or “Error” messages.
 🎯 Bonus:
 Cache the last search in localStorage.
-Display icons based on weather type (sun, rain, etc).
+Display icons based on weather type (sun, rain, etc). 
 
 ⏰ 12. Digital Clock / Timer
 
