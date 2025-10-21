@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { FilterBar } from './components/FilterBar.jsx'
+import { CityInformation } from './components/CityInformation.jsx'
 
 export default function App2() {
   const [city, setCity] = useState('');
@@ -7,7 +9,7 @@ export default function App2() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const API_KEY = import.meta.env.WEATHER_API_KEY;
+  const API_KEY = import.meta.env.VITE_WEATHER_API_KEY;
 
   function handleFilter(e) {
     setCity(e.target.value);
@@ -17,6 +19,7 @@ export default function App2() {
     if (!city) return;
     setIsLoading(true);
     setError('');
+    
     fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}`)
       .then(res => {
         if (!res.ok) throw new Error("City not found");
@@ -49,7 +52,7 @@ export default function App2() {
 
   return (
     <>
-      <h1>🌤 Weather Fetcher</h1>
+      <h1>Weather Fetcher</h1>
       <FilterBar onFilter={handleFilter} onClick={handleClick} />
       <br />
       {isLoading && <p>Loading...</p>}
@@ -61,21 +64,3 @@ export default function App2() {
   );
 }
 
-function FilterBar({ onFilter, onClick }) {
-  return (
-    <>
-      <input type="text" onChange={onFilter} placeholder="Enter city..." />
-      <button onClick={onClick}>Get Weather</button>
-    </>
-  );
-}
-
-function CityInformation({ city, results }) {
-  return (
-    <>
-      <h2>{city.toUpperCase()}</h2>
-      <p>🌤 Condition: {results.weather?.[0]?.main}</p>
-      <p>🌡 Temperature: {(results.main?.temp - 273.15).toFixed(1)} °C</p>
-    </>
-  );
-}
