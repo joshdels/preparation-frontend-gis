@@ -8,7 +8,7 @@ const products = [
 
 
 export default function App3() {
-  // Tomorrow nani, start ko ugma sa states, then button
+  // Shopping Cart Challege
   const [cartItems, setCartItems] = useState([]);
 
   function handleAddToCart(item) {
@@ -56,7 +56,8 @@ function ProductList({products, cartItems, addFeatures, deleteFeatures}) {
           <button onClick={() => deleteFeatures(product.id)}>Delete</button>
           <p>Quantity: {cartItems.filter(item => item.id === product.id).length}</p>
           <p>Cost: {
-            cartItems.filter(item => item.id === product.id)
+            cartItems
+              .filter(item => item.id === product.id)
               .reduce((total, item) => total + item.price, 0)
             }</p>
         </div>
