@@ -4,6 +4,7 @@ export default function App5() {
   const [count, setCount] = useState(0);
   const [countDown, setCountDown] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
+  const [isCountDown, setIsCountDown] = useState(false);
 
   useEffect(() => {
     if (!isRunning) return
@@ -14,11 +15,16 @@ export default function App5() {
   }, [isRunning]); // ✅ Now count is not a dependency! 
 
   useEffect(() => {
+    if (!isCountDown) return;
+    if (countDown <= 0 ) {
+      setIsCountDown(false);
+      return;
+    }  
     const intervalID = setInterval(() => {
       setCountDown(c => c - 1);
     }, 1000);
     return () => clearInterval(intervalID);
-  }, []);
+  }, [isCountDown]);
 
 
   function handleStart() {
@@ -29,10 +35,19 @@ export default function App5() {
     setIsRunning(false);
   }
 
-  function handleInput(e) {
-    setCountDown(e.target.value);
-    console.log(countDown);
+  function handleResetCount() {
+    setCount(0);
+    setIsRunning(false);
   }
+
+  function handleInput(e) {
+    setCountDown(Number(e.target.value));
+  }
+
+  function handleStartCountDown() {
+    setIsCountDown(true);
+  }
+
 
   //Digital Clock
   return (
@@ -42,15 +57,18 @@ export default function App5() {
       <h1>{count}</h1>
       <button onClick={handleStart}>Start</button>
       <button onClick={handleStop}>Stop</button>
+      <button onClick={handleResetCount}>Reset</button>
       <hr />
       <CountDown 
         textInput={handleInput}
+        countDown={countDown}
+        onClick={handleStartCountDown}
       />
     </>
   )
 }
 
-function CountDown({textInput}) {
+function CountDown({countDown, textInput, onClick}) {
   return (
     <>
       <hr />
@@ -59,12 +77,11 @@ function CountDown({textInput}) {
         type="number"
         onChange={textInput}
       />
-      // ang input mu enter how much time to be inserted
-      // then reuse the start and Stop
-      // add guro kog reset
-      // 11pm ganna sleep na
-
-
+     
+      {countDown === 0 
+        ? (<h1> Tada! </h1> ) 
+        : (<h3>{countDown} seconds remaining</h3>)}
+      <button onClick={onClick}>Start Count Down</button>
     </>
   )
 }
