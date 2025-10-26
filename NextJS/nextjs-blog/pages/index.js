@@ -2,13 +2,28 @@ import Head from 'next/head';
 import Layout, { siteTitle } from '../components/layout';
 import utilStyles from '../styles/utils.module.css';
 import { getSortedPostsData } from '../lib/posts'
+import {useEffect, useState } from 'react'
  
 export default function Home({ allPostsData }) {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetch('/api/hello')
+        .then((res) => res.json())
+        .then((data) => setData(data));
+      }, 2000)
+      return () => clearTimeout(timer);
+    }, []);
+
   return (
     <Layout home>
       <Head>
         <title>{siteTitle}</title>
       </Head>
+      <h1>Home Page</h1>
+      <p>{data ? data.message : 'Loading...'}</p>
+
       <section className={utilStyles.headingMd}>
         <p>Joshua De Leon Hyeyeyeyye</p>
         <p>
