@@ -80,7 +80,7 @@ Show “Loading…” or “Error” messages.
 Cache the last search in localStorage.
 Display icons based on weather type (sun, rain, etc). 
 
-⏰ 12. Digital Clock / Timer
+⏰ 12. Digital Clock / Timer -  on going
 
 Concepts: useEffect, Cleanup Functions
 🧩 Goal:
