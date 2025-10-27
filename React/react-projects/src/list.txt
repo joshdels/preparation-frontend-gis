@@ -110,7 +110,7 @@ Create a context that stores a fake user object (e.g., {name: "Joshua"}).
 Persist the user session in localStorage.
 Add “Welcome back!” message if user reloads.
 
-🪝 15. Custom Hook – useLocalStorage
+🪝 15. Custom Hook – useLocalStorage -> the custom hook is easy but the useLocalStorage is kinda hard
 
 Concepts: Custom Hooks, State Persistence
 🧩 Goal:
