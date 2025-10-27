@@ -80,7 +80,7 @@ Show “Loading…” or “Error” messages.
 Cache the last search in localStorage.
 Display icons based on weather type (sun, rain, etc). 
 
-⏰ 12. Digital Clock / Timer -  on going
+⏰ 12. Digital Clock / Timer -  done
 
 Concepts: useEffect, Cleanup Functions
 🧩 Goal:
@@ -90,7 +90,7 @@ Add a Start/Stop timer button.
 Create a countdown feature with custom duration input.
 Clean up the interval properly when component unmounts.
 
-🌙 13. Global Theme Toggle
+🌙 13. Global Theme Toggle -Done
 
 Concepts: Context API, State Management
 🧩 Goal:
@@ -100,7 +100,7 @@ Two components (e.g. Navbar, Card) should react to the theme.
 Save theme preference in localStorage with useEffect.
 Add smooth background transition.
 
-🧭 14. Auth Context (Fake Login System)
+🧭 14. Auth Context (Fake Login System) - its bit of hard but manage to understand, DONE
 
 Concepts: Context API, Conditional Rendering, useEffect
 🧩 Goal:
