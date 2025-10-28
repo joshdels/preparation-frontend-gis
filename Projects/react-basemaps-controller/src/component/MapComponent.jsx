@@ -17,6 +17,7 @@ export default function MapComponent({ basemap, setCoords }) {
         zoom: 6,
       });
 
+      //Map events
       map.current.on("mousemove", (e) => {
         setCoords({
           lng: e.lngLat.lng.toFixed(5),
