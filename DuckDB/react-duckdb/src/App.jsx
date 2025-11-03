@@ -31,10 +31,9 @@ function DuckDBExample() {
     e.preventDefault();
     if (!conn) return;
 
-    const result = await conn.query(`SELECT * FROM people WHERE ${filter}`)
+    const result = await conn.query(`SELECT * FROM people WHERE age ${filter}`)
     setResult(result.toArray().map(r => r.toJSON()));
   }
-
 
 
   useEffect(() => {
@@ -69,7 +68,7 @@ function DuckDBExample() {
       // Example query
       await conn.query("CREATE TABLE people(name VARCHAR, age INTEGER)");
       await conn.query("INSERT INTO people VALUES ('Alice', 30), ('Bob', 25), ('Josh', 26)");
-      const res = await conn.query("SELECT * FROM people WHERE age >= 26");
+      const res = await conn.query("SELECT * FROM people");
 
       setResult(res.toArray().map(r=> r.toJSON()));
     }
