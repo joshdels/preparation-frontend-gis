@@ -16,7 +16,20 @@ export default function Home() {
 
   return (
     <>
+      
       <Map />
+      <ul>
+        {result.map((r, i) => (
+          <li key={i}>
+            {r.name} — {r.age}
+          </li>
+        ))}
+        {parquet.map((r, i) => (
+          <li key={i}>
+            {r.name} — {r.pop_est}
+          </li>
+        ))}
+      </ul>
     </>
   );
 }
