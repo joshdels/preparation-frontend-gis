@@ -61,7 +61,7 @@ export default function MapComponent2() {
               "North America", "#acc236",
               "South America", "#00a950",
               "Antarctica", "#58595b",
-              "#cccccc" // fallback
+              "#cccccc" 
             ],
             "fill-opacity": 1 },
         });
