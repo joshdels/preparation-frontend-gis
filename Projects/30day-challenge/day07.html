@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Driving Distance Isochrone Map</title>
+  <meta name="viewport" content="initial-scale=1, width=device-width" />
+  <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
+  <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
+  <style>
+    body, html { margin: 0; padding: 0; height: 100%; }
+    #map { width: 100%; height: 100vh; }
+
+    /* Legend panel */
+    #panel {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      padding: 15px 20px;
+      font-family: Arial, sans-serif;
+      z-index: 2;
+      max-width: 250px;
+    }
+
+    #panel h1 {
+      font-size: 16px;
+      margin: 0 0 10px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      margin-right: 8px;
+      border: 1px solid #ccc;
+    }
+
+    #details {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #333;
+    }
+
+    #coords {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <div id="panel">
+    <h1>Driving Reach (in minutes)</h1>
+    <div class="legend-item"><div class="legend-color" style="background:#e60a41;"></div> 10 minutes</div>
+    <div class="legend-item"><div class="legend-color" style="background:#ec5379;"></div> 20 minutes</div>
+    <div class="legend-item"><div class="legend-color" style="background:#d890a2;"></div> 30 minutes</div>
+    <hr>
+    <div id="details">
+      <div>📍 <span id="coords">Lat: --, Lng: --</span></div><br>
+      <div id="address">Address: (click on map)</div>
+    </div>
+  </div>
+
+  <script>
+    const ORS_API_KEY = "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6IjAyYTQwNGRmZmZhZjQ1Yjc5M2UyYTJlOGQ4OWM5ZDNhIiwiaCI6Im11cm11cjY0In0=";
+
+    const map = new maplibregl.Map({
+      container: "map",
+      style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
+      center: [4.9003, 52.3784],
+      zoom: 10
+    });
+
+    let marker;
+
+    async function drawIsochrone(lng, lat) {
+      const url = "https://api.openrouteservice.org/v2/isochrones/driving-car";
+      const body = { locations: [[lng, lat]], range: [600, 1200, 1800] };
+
+      try {
+        console.log("Fetching isochrone for:", lng, lat);
+
+        const res = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Authorization": ORS_API_KEY,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(body)
+        });
+
+        if (!res.ok) throw new Error(`ORS error ${res.status}`);
+        const data = await res.json();
+
+        // Remove previous layers
+        if (map.getLayer("isochrone-layer")) map.removeLayer("isochrone-layer");
+        if (map.getLayer("isochrone-outline")) map.removeLayer("isochrone-outline");
+        if (map.getSource("isochrones")) map.removeSource("isochrones");
+
+        // Add new source and layers
+        map.addSource("isochrones", { type: "geojson", data });
+
+        map.addLayer({
+          id: "isochrone-layer",
+          type: "fill",
+          source: "isochrones",
+          paint: {
+            "fill-color": [
+              "step",
+              ["to-number", ["get", "value"]],
+              "#3CB44B", 600, "#4363D8", 1200, "#E6194B"
+            ],
+            "fill-opacity": 0.4
+          }
+        });
+
+        map.addLayer({
+          id: "isochrone-outline",
+          type: "line",
+          source: "isochrones",
+          paint: {
+            "line-color": "#111",
+            "line-width": 2
+          }
+        });
+
+        // Move or create marker
+        if (marker) marker.setLngLat([lng, lat]);
+        else marker = new maplibregl.Marker({ color: "red" }).setLngLat([lng, lat]).addTo(map);
+
+        // Update panel details
+        document.getElementById("coords").textContent = `Lat: ${lat.toFixed(3)}, Lng: ${lng.toFixed(3)}`;
+        document.getElementById("address").textContent = "Loading address...";
+
+        // Optional: Reverse geocoding (nominatim)
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
+          .then(res => res.json())
+          .then(data => {
+            document.getElementById("address").textContent =
+              data.display_name ? `Address: ${data.display_name}` : "Address: Not found";
+          })
+          .catch(() => {
+            document.getElementById("address").textContent = "Address: Not available";
+          });
+
+      } catch (err) {
+        console.error("❌ Failed:", err);
+        alert("Error fetching isochrone (check console).");
+      }
+    }
+
+    // Load initial
+    map.on("load", () => drawIsochrone(4.9003, 52.3784));
+
+    // Click event
+    map.on("click", (e) => {
+      const { lng, lat } = e.lngLat;
+      drawIsochrone(lng, lat);
+    });
+  </script>
+</body>
+</html>
