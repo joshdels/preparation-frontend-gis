@@ -61,6 +61,7 @@ const useDuckDBStore = create((set) => ({
       
       const res = await conn.query("SELECT * FROM read_parquet('example.parquet')");
       const data = res.toArray().map((r) => r.toJSON());
+      console.log(data);
       set({ parquet: data });
     } catch (err) {
       console.error("File Error:", err);
