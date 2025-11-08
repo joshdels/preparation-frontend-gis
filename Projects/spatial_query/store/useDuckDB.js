@@ -6,23 +6,20 @@ import { create } from "zustand";
 const useDuckDBStore = create((set) => ({
   db: null,
   conn: null,
-  parquet: [],
-  result: [],
+  parquet: null,
 
-  setResult: (r) => set({ result: r }),
   setConn: (c) => set({ conn: c }),
 
+  // ✅ Initialize DuckDB
   initDuckDB: async () => {
     if (typeof window === "undefined") return;
     const { conn } = useDuckDBStore.getState();
     if (conn) return;
 
     try {
-      // ✅ Auto-detect bundle
       const bundles = duckdb.getJsDelivrBundles();
       const bundle = await duckdb.selectBundle(bundles);
 
-      // ✅ Fetch worker script and create Blob worker (bypasses CORS)
       const workerSource = await fetch(bundle.mainWorker).then((r) => r.text());
       const blob = new Blob([workerSource], { type: "text/javascript" });
       const worker = new Worker(URL.createObjectURL(blob));
@@ -33,18 +30,14 @@ const useDuckDBStore = create((set) => ({
       const conn = await db.connect();
       set({ db, conn });
 
-      await conn.query("CREATE TABLE people(name VARCHAR, age INTEGER)");
-      await conn.query(
-        "INSERT INTO people VALUES ('Alice', 30), ('Bob', 25), ('Josh', 26)"
-      );
-
-      const res = await conn.query("SELECT * FROM people");
-      set({ result: res.toArray().map((r) => r.toJSON()) });
+      await conn.query("INSTALL spatial; LOAD spatial;");
+      console.log("✅ DuckDB initialized");
     } catch (err) {
       console.error("DuckDB init failed:", err);
     }
   },
 
+  // ✅ Read GeoParquet and convert to GeoJSON
   readParquet: async () => {
     const { db, conn } = useDuckDBStore.getState();
     if (!db || !conn) {
@@ -53,21 +46,48 @@ const useDuckDBStore = create((set) => ({
     }
 
     try {
-      // I dont know this?
       const response = await fetch("/example.parquet");
       if (!response.ok) throw new Error("Parquet file not found in /public");
+
       const buffer = await response.arrayBuffer();
       await db.registerFileBuffer("example.parquet", new Uint8Array(buffer));
-      
-      const res = await conn.query("SELECT * FROM read_parquet('example.parquet')");
-      const data = res.toArray().map((r) => r.toJSON());
-      console.log(data);
-      set({ parquet: data });
+
+      // Create temporary table
+      await conn.query(`
+        CREATE TABLE my_geoparquet AS
+        SELECT * FROM read_parquet('example.parquet');
+      `);
+
+      // Convert to GeoJSON (assuming column 'geometry' exists)
+      const res = await conn.query(`
+        SELECT json_object(
+          'type', 'Feature',
+          'geometry', ST_AsGeoJSON(geometry),
+          'properties', json_object(
+            'pop_est', pop_est,
+            'continent', continent,
+            'name', name,
+            'gdp_md_est', gdp_md_est
+          )
+        ) AS feature_json
+        FROM my_geoparquet;
+      `);
+
+      const features = res.toArray().map((r) => JSON.parse(r.feature_json));
+
+      const geoJsonOutput = {
+        type: "FeatureCollection",
+        features: features,
+      };
+
+      console.log("✅ GeoJSON ready:", geoJsonOutput);
+      set({ parquet: geoJsonOutput });
     } catch (err) {
       console.error("File Error:", err);
     }
   },
 
+  // filterData
 }));
 
 export default useDuckDBStore;

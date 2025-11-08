@@ -5,7 +5,7 @@ import useDuckDBStore from "@/store/useDuckDB";
 import Map from "@/layout/Map";
 
 export default function Home() {
-  const {result, parquet, readParquet, initDuckDB, } = useDuckDBStore();
+  const {parquet, readParquet, initDuckDB, } = useDuckDBStore();
 
   useEffect(() => {
     (async () => {
