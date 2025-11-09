@@ -5,11 +5,11 @@ import useDuckDBStore from "@/store/useDuckDB";
 import Map from "@/layout/Map";
 
 export default function Home() {
+  const { initDuckDB, readParquet } = useDuckDBStore();
   const geojson = useDuckDBStore((state) => state.geojson);
   const inputValue = useDuckDBStore((state) => state.inputValue);
   const setInputValue = useDuckDBStore((state) => state.setInputValue);
   const handleSubmit = useDuckDBStore((state) => state.handleSubmit);
-  const { initDuckDB, readParquet } = useDuckDBStore();
 
   useEffect(() => {
     const loadData = async () => {
