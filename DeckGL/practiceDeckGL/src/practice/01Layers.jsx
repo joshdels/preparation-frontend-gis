@@ -1,6 +1,15 @@
 import { DeckGL } from '@deck.gl/react';
 import { ScatterplotLayer, TextLayer } from '@deck.gl/layers';
 
+const INITIAL_VIEW_STATE = {
+  longitude: -122.4,
+  latitude: 37.8,
+  zoom: 12,
+  pitch: 0,
+  bearing: 0,
+};
+
+
 const flights = [
   { lon: -122.39, lat: 37.62, alt: 1800, callSign: 'SKW 3342' },
   { lon: -122.41, lat: 37.65, alt: 2200, callSign: 'UAL 1123' },
@@ -25,18 +34,15 @@ export default function Layers() {
       data: flights,
       getText: d => d.callSign,
       getPosition: d => [d.lon, d.lat, d.alt],
+      getFillColor: [255, 255, 255],
       getSize: 12
     })
   ];
 
   return (
     <DeckGL
-      initialViewState={{
-        longitude: -122.44,
-        latitude: 37.76,
-        zoom: 8,
-      }}
-      controller={true}
+      initialViewState={INITIAL_VIEW_STATE}
+      controller={{doubleClickZoom: true, touchRotate: true}}
       layers={layers}
     />
   );
