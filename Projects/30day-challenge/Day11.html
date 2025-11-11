@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Map Circle Intersection</title>
+    <script src="https://unpkg.com/maplibre-gl@^5.10.0/dist/maplibre-gl.js"></script>
+    <link
+      href="https://unpkg.com/maplibre-gl@^5.10.0/dist/maplibre-gl.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@turf/turf@7/turf.min.js"></script>
+    <style>
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+      }
+      #map {
+        width: 100%;
+        height: 100%;
+      }
+#pannel {
+  position: absolute; /* so it sits over the map */
+  top: 40px;
+  right: 40px;
+  width: 350px;
+  max-height: 70%; /* prevents it from taking too much space */
+  background: rgba(255, 255, 255, 0.95); /* slightly transparent */
+  padding: 20px;
+  padding-bottom: 10px;
+  overflow-y: auto; /* scroll if content is tall */
+  z-index: 10; /* above map */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Panel header styling */
+#pannel h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.3em;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+
+/* Individual polygon entries */
+#pannel p {
+  margin: 5px 0;
+  padding: 6px 10px;
+  background: #f4f4f9;
+  border-left: 4px solid orange;
+  border-radius: 4px;
+  font-size: 0.95em;
+}
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <div id="pannel">
+      <h3>Select Provinces</h3>
+      <p>Click the map below to show 50km provinces</p>
+    </div>
+    <script>
+      function handleMap() {
+        const map = new maplibregl.Map({
+          container: "map",
+          style:
+            "https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json",
+          center: [121, 14.6],
+          zoom: 5,
+        });
+
+        // Empty point FeatureCollection
+        const pointsGeoJSON = { type: "FeatureCollection", features: [] };
+
+        map.on("load", async () => {
+          const res = await fetch("data/boundaries_adm1.json"); // your GeoJSON boundaries
+          const data = await res.json();
+
+          map.addSource("points", { type: "geojson", data: pointsGeoJSON });
+          map.addSource("boundary-source", { type: "geojson", data });
+
+          // Point layer
+          map.addLayer({
+            id: "point-layer",
+            type: "circle",
+            source: "points",
+            paint: {
+              "circle-radius": 8,
+              "circle-color": "red",
+              "circle-stroke-color": "white",
+              "circle-stroke-width": 2,
+            },
+          });
+
+          // Boundary fill
+          map.addLayer({
+            id: "boundary-layer",
+            type: "fill",
+            source: "boundary-source",
+            paint: { "fill-color": "orange", "fill-opacity": 0.4 },
+          });
+
+          // Boundary outline
+          map.addLayer({
+            id: "boundary-outline",
+            type: "line",
+            source: "boundary-source",
+            paint: { "line-color": "#000", "line-width": 0.5 },
+          });
+
+          map.on("click", (e) => {
+            const coords = [e.lngLat.lng, e.lngLat.lat];
+            const radiusKm = 50; // radius in km
+
+            // Create circle feature
+            const circle = turf.circle(coords, radiusKm, {
+              steps: 64,
+              units: "kilometers",
+            });
+
+            // Check intersections
+            // Make sure your circle is a Feature
+            // e.g., turf.circle([lng, lat], radiusInKm)
+            const selectedPolygons = data.features.filter((feature) => {
+              if (!feature.geometry) return false;
+              try {
+                return turf.booleanIntersects(circle, feature);
+              } catch (err) {
+                console.warn("Skipping invalid geometry:", err);
+                return false;
+              }
+            });
+
+            const pannel = document.querySelector("#pannel");
+            pannel.innerHTML = `<h3>Selected ${selectedPolygons.length} Province/s </h3>`;
+
+            console.log("Selected polygons:", selectedPolygons);
+
+            selectedPolygons.length
+              ? selectedPolygons.forEach((f) => {
+                  console.log(f.properties.NAME_1);
+                  const p = document.createElement("p");
+                  p.textContent = `${f.properties.NAME_1}`;
+                  pannel.appendChild(p);
+                })
+              : pannel.insertAdjacentHTML(
+                  "beforeend",
+                  "<p>No Polygons selected, click near the boundaries</p>"
+                );
+
+            // Update point
+            pointsGeoJSON.features = [
+              {
+                type: "Feature",
+                geometry: { type: "Point", coordinates: coords },
+                properties: { createdAt: new Date().toISOString() },
+              },
+            ];
+            map.getSource("points").setData(pointsGeoJSON);
+
+            // Add or update circle layer behind point
+            if (!map.getSource("circle-source")) {
+              map.addSource("circle-source", { type: "geojson", data: circle });
+              map.addLayer(
+                {
+                  id: "circle-layer",
+                  type: "fill",
+                  source: "circle-source",
+                  paint: {
+                    "fill-color": "blue",
+                    "fill-opacity": 0.2,
+                    "fill-outline-color": "blue",
+                  },
+                },
+                "point-layer"
+              );
+
+              map.addLayer(
+                {
+                  id: "circle-outline",
+                  type: "line",
+                  source: "circle-source",
+                  paint: { "line-color": "blue", "line-width": 3 },
+                },
+                "point-layer"
+              ); // insert below point-layer
+            } else {
+              map.getSource("circle-source").setData(circle);
+              //map.moveLayer('point-layer', 'boundary-layer', 'boundary-outline', 'circle-layer', ); // ensure it's behind point
+            }
+          });
+        });
+      }
+
+      handleMap();
+    </script>
+  </body>
+</html>

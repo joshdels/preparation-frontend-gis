@@ -10,8 +10,7 @@ import {GeoJsonLayer, PolygonLayer} from '@deck.gl/layers';
 import {LightingEffect, AmbientLight, _SunLight as SunLight} from '@deck.gl/core';
 import {scaleThreshold} from 'd3-scale';
 
-import type {Color, Position, PickingInfo, MapViewState} from '@deck.gl/core';
-import type {Feature, Geometry} from 'geojson';
+import {Color, Position, PickingInfo, MapViewState} from '@deck.gl/core';
 
 // Source data GeoJSON
 const DATA_URL =
@@ -36,7 +35,7 @@ export const COLOR_SCALE = scaleThreshold<number, Color>()
     [128, 0, 38]
   ]);
 
-const INITIAL_VIEW_STATE: MapViewState = {
+const INITIAL_VIEW_STATE = {
   latitude: 49.254,
   longitude: -123.13,
   zoom: 11,
@@ -59,7 +58,7 @@ const dirLight = new SunLight({
   _shadow: true
 });
 
-const landCover: Position[][] = [
+const landCover = [
   [
     [-123.0, 49.196],
     [-123.0, 49.324],
@@ -68,11 +67,6 @@ const landCover: Position[][] = [
   ]
 ];
 
-type BlockProperties = {
-  valuePerParcel: number;
-  valuePerSqm: number;
-  growth: number;
-};
 
 function getTooltip({object}: PickingInfo<Feature<Geometry, BlockProperties>>) {
   return (
