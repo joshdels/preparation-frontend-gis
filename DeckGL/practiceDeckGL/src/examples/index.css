@@ -1,0 +1,28 @@
+.panel {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  padding: 24px 32px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  color: #222;
+  max-width: 320px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  transition: all 0.3s ease;
+}
+
+
+
+/* Headings */
+.panel h1 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0 0 8px;
+  letter-spacing: 0.5px;
+  color: #0a2540;
+}
+
+
+
